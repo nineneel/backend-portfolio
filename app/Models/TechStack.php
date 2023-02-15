@@ -10,4 +10,9 @@ class TechStack extends Model
     use HasFactory;
 
     protected $guarded = ['id'];
+
+    public function works()
+    {
+        return $this->belongsToMany(Work::class, 'work_tech_stacks');
+    }
 }

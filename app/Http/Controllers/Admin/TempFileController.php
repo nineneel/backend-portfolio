@@ -55,4 +55,9 @@ class TempFileController extends Controller
 
         return response()->json(['success' => true]);
     }
+
+    public function temp_load()
+    {
+        dd(request());
+    }
 }

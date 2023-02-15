@@ -10,4 +10,9 @@ class WorkImage extends Model
     use HasFactory;
 
     protected $guarded = ['id'];
+
+    public function work()
+    {
+        return $this->belongsTo(Work::class);
+    }
 }

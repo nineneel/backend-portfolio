@@ -20,4 +20,19 @@ class Work extends Model
             ]
         ];
     }
+
+    public function service()
+    {
+        return $this->belongsTo(Service::class);
+    }
+
+    public function tech_stacks()
+    {
+        return $this->belongsToMany(TechStack::class, 'work_tech_stacks');
+    }
+
+    public function images()
+    {
+        return $this->hasMany(WorkImage::class);
+    }
 }

@@ -10,4 +10,9 @@ class Service extends Model
     use HasFactory;
 
     protected $guarded = ['id'];
+
+    public function works()
+    {
+        return $this->hasMany(Work::class);
+    }
 }

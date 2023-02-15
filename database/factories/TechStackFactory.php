@@ -19,7 +19,7 @@ class TechStackFactory extends Factory
         return [
             'name' => fake()->words(2, true),
             'description' => fake()->paragraphs(3, true),
-            'thumbnail' => fake()->word(),
+            'thumbnail' => "laravel.svg",
             'thumbnail_alt' => fake()->words(4, true),
         ];
     }

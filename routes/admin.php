@@ -28,6 +28,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('admin_logout');
 // upload temporary file using filepond
 Route::post('/temp-upload', [TempFileController::class, 'temp_upload']);
 Route::delete('/temp-delete', [TempFileController::class, 'temp_delete']);
+Route::get('/temp-load', [TempFileController::class, 'temp_load']);
 
 Route::middleware('is.admin')->group(function () {
     Route::get('/dashboard', function () {
@@ -35,8 +36,8 @@ Route::middleware('is.admin')->group(function () {
     })->name('dashboard');
 
     // Work Controller
-    Route::get('/create-slug', [WorkController::class, 'create_slug']);
     Route::resource('works', WorkController::class);
+    Route::get('/create-slug', [WorkController::class, 'create_slug']);
 
     // Service Controller
     Route::resource('services', ServiceController::class);

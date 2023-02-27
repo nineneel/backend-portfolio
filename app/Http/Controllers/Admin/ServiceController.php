@@ -159,7 +159,24 @@ class ServiceController extends Controller
      */
     public function destroy(Service $service)
     {
-        //
+        if (count($service->works) > 0) {
+            return redirect()->back()->with('error', 'Can\'t delete this service, because this service is attached with some work!');
+        }
+
+        DB::beginTransaction();
+        try {
+            if ($old_thumbnail_path = $service->thumbnail) {
+                $file_path = public_path($old_thumbnail_path);
+                if (File::exists($file_path)) File::delete($file_path);
+            }
+            $service->delete();
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollback();
+            return redirect()->back()->with('error', $e->getMessage());
+        }
+
+        return redirect(route('services.index'))->with('success', "Services has been Deleted!");
     }
 
     public function create_slug(Request $request)

@@ -173,8 +173,9 @@
                                 @foreach ($services as $service)
                                     @if ($service->id == $work->service_id)
                                         <option selected value="{{ $service->id }}">{{ $service->name }}</option>
+                                    @else
+                                        <option value="{{ $service->id }}">{{ $service->name }}</option>
                                     @endif
-                                    <option value="{{ $service->id }}">{{ $service->name }}</option>
                                 @endforeach
                             </select>
                             @error('service')

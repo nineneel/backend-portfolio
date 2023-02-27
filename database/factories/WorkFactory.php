@@ -24,6 +24,7 @@ class WorkFactory extends Factory
             'url' => fake()->url(),
             'overview' => fake()->paragraphs(3, true),
             'development_date' => fake()->dateTimeBetween('-2 years', '-1 years'),
+            'thumbnail' => 'image.png',
         ];
     }
 }

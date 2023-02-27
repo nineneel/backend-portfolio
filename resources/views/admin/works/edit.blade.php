@@ -76,6 +76,7 @@
                 <form action="{{ route('works.update', $work->id) }}" method="post" enctype="multipart/form-data">
                     @method('put')
                     @csrf
+                    <input type="hidden" name="work_id" value="{{ $work->id }}">
                     <div class="grid grid-cols-6 gap-6">
                         {{-- Project Name --}}
                         <div class="col-span-6 sm:col-span-3">
@@ -129,7 +130,8 @@
                         <div class="col-span-6 sm:col-span-2">
                             <label for="url"
                                 class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">URL</label>
-                            <input type="url" name="url" id="url" required placeholder="https://nineneel.com"
+                            <input type="url" name="url" id="url" required
+                                placeholder="https://nineneel.com"
                                 class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500 @error('url')  border-red-500 text-red-900 focus:border-red-500 dark:text-red-500 dark:border-red-500 @enderror"
                                 value="{{ old('url', $work->url) }}">
                             @error('url')
@@ -162,7 +164,7 @@
                         </div>
 
                         {{-- Services --}}
-                        <div class="col-span-6 sm:col-span-2">
+                        <div class="col-span-6">
                             <label for="service"
                                 class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Service</label>
                             <select id="service" name="service"
@@ -175,13 +177,13 @@
                                     <option value="{{ $service->id }}">{{ $service->name }}</option>
                                 @endforeach
                             </select>
-                            @error('development_date')
+                            @error('service')
                                 <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ $message }}</p>
                             @enderror
                         </div>
 
                         {{-- Tech Stack --}}
-                        <div class="col-span-6 sm:col-span-4">
+                        <div class="col-span-6">
                             <h4 class="mb-2 text-sm font-medium text-gray-900 dark:text-white">Tech Stack</h4>
                             <ul
                                 class="items-center w-full text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg sm:flex dark:bg-gray-700 dark:border-gray-600 dark:text-white">
@@ -221,14 +223,78 @@
                             @enderror
                         </div>
 
-                        {{-- Images --}}
+
+                        {{-- Thumbnail --}}
                         <div class="col-span-6">
                             <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                                for="images">Images</label>
-                            <input
-                                class="block w-full mb-5 text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400"
-                                id="images" name="images" type="file" multiple>
-                            @error('image')
+                                for="thumbnail-container">Thumbnail</label>
+                            <div class="flex flex-col items-center justify-center w-full">
+                                <div id="thumbnail-preview"
+                                    class="flex mb-2 p-4 flex-col items-center justify-center w-full border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 overflow-hidden dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
+                                    <div id="thumbnail-preview-container"
+                                        class="py-1 flex flex-wrap justify-center w-full h-full gap-4 xl:gap-8">
+                                        <img src="{{ asset($work->thumbnail) }}"
+                                            alt="{{ $work->project_name }} thumbnail" class="h-56">
+                                    </div>
+                                    <p class="mb-2 text-sm text-gray-500 dark:text-gray-400"><span
+                                            class="font-semibold">Thumbnail Preview</span></p>
+                                </div>
+                                <label for="thumbnail"
+                                    class="flex flex-col items-center justify-center w-full h-28 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
+                                    <div class="flex flex-col items-center justify-center pt-2 pb-2">
+                                        <svg aria-hidden="true" class="w-10 h-10 mb-3 text-gray-400" fill="none"
+                                            stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12">
+                                            </path>
+                                        </svg>
+                                        <p class="mb-2 text-sm text-gray-500 dark:text-gray-400"><span
+                                                class="font-semibold">Click to upload</span></p>
+                                    </div>
+                                    <input id="thumbnail" type="file" name="thumbnail" class="hidden"
+                                        accept="image/png" />
+                                </label>
+                            </div>
+                            @error('thumbnail')
+                                <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        {{-- Image --}}
+                        <div class="col-span-6">
+                            <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                for="image-container">Images</label>
+
+                            <div class="flex flex-col items-center justify-center w-full">
+                                <div id="image-preview"
+                                    class="flex mb-2 p-4 flex-col items-center justify-center w-full border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 overflow-hidden dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
+                                    <div id="image-preview-container"
+                                        class="py-1 flex flex-wrap justify-center w-full h-full gap-4 xl:gap-8">
+                                        @foreach ($work->images as $image)
+                                            <img src="{{ asset($image->image) }}" alt="{{ $image->image_alt }}"
+                                                class="h-56">
+                                        @endforeach
+                                    </div>
+                                    <p class="mb-2 text-sm text-gray-500 dark:text-gray-400"><span
+                                            class="font-semibold">Preview</span></p>
+                                </div>
+                                <label for="images"
+                                    class="flex flex-col items-center justify-center w-full h-28 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
+                                    <div class="flex flex-col items-center justify-center pt-2 pb-2">
+                                        <svg aria-hidden="true" class="w-10 h-10 mb-3 text-gray-400" fill="none"
+                                            stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12">
+                                            </path>
+                                        </svg>
+                                        <p class="mb-2 text-sm text-gray-500 dark:text-gray-400"><span
+                                                class="font-semibold">Click to upload</span></p>
+                                    </div>
+                                    <input id="images" type="file" name="images[]" class="hidden"
+                                        accept="image/png" multiple />
+                                </label>
+                            </div>
+                            @error('images')
                                 <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ $message }}</p>
                             @enderror
                         </div>
@@ -252,7 +318,7 @@
         const slug_toggle = document.querySelector('#slug-toggle');
 
         project_name.addEventListener('change', function() {
-            fetch(`/admin/create-slug?title=${project_name.value}`)
+            fetch(`/admin/work/create-slug?title=${project_name.value}`)
                 .then(response => response.json())
                 .then(data => slug.value = data.slug);
         })
@@ -263,27 +329,49 @@
             slug.classList.toggle('cursor-not-allowed')
         })
 
-        FilePond.registerPlugin(FilePondPluginImagePreview);
-        const inputElement = document.querySelector('input[id="images"]');
-        const pond = FilePond.create(inputElement);
-        pond.setOptions({
-            allowMultiple: true,
-            imagePreviewMinHeight: 250,
-            files: [
-                @foreach ($work->images as $image)
-                    {
-                        source: "{{ asset('storage/work-images/' . $image->image) }}",
-                    },
-                @endforeach
-            ],
-            server: {
-                // 'process': '/admin/temp-upload',
-                'revert': '/admin/temp-delete',
-                'headers': {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                }
+        // Image Preview
+        const imagesPreview = (file, isSingle) => {
+            const file_reader = new FileReader();
 
+            const oFReader = new FileReader();
+            oFReader.readAsDataURL(file);
+
+            oFReader.onload = function(oFREvent) {
+                const img = document.createElement("img");
+                img.classList.add('h-64');
+                img.src = oFREvent.target.result;
+                img.alt = file.name;
+                if (isSingle) {
+                    document.querySelector('#thumbnail-preview-container').append(img);
+                } else {
+                    document.querySelector('#image-preview-container').append(img);
+                }
             }
-        })
+        }
+
+        // Thumbnail
+        const thumbnail_input = document.querySelector("#thumbnail");
+        const thumbnail_input_wrapper = document.querySelector("#thumbnail-preview");
+
+        thumbnail_input.addEventListener("change", (element) => {
+            if (!element.target.files) return; // Do nothing.
+            document.querySelector('#thumbnail-preview-container').innerHTML = '';
+            [...element.target.files].forEach((file) => imagesPreview(file, true));
+            thumbnail_input_wrapper.classList.remove('hidden');
+            thumbnail_input_wrapper.classList.add('flex');
+        });
+
+        // Images
+        const images_input = document.querySelector("#images");
+        const images_input_wrapper = document.querySelector("#image-preview");
+
+        images_input.addEventListener("change", (element) => {
+            if (!element.target.files) return; // Do nothing.
+            document.querySelector('#image-preview-container').innerHTML = '';
+            [...element.target.files].forEach((file) => imagesPreview(file, false));
+            images_input_wrapper.classList.remove('hidden');
+            images_input_wrapper.classList.add('flex');
+
+        });
     </script>
 @endsection

@@ -37,8 +37,9 @@ Route::middleware('is.admin')->group(function () {
 
     // Work Controller
     Route::resource('works', WorkController::class);
-    Route::get('/create-slug', [WorkController::class, 'create_slug']);
+    Route::get('/work/create-slug', [WorkController::class, 'create_slug']);
 
     // Service Controller
     Route::resource('services', ServiceController::class);
+    Route::get('/service/create-slug', [ServiceController::class, 'create_slug']);
 });

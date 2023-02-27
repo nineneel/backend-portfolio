@@ -14,6 +14,7 @@ use Cviebrock\EloquentSluggable\Services\SlugService;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
 
@@ -26,7 +27,8 @@ class WorkController extends Controller
      */
     public function index()
     {
-        $works = Work::all();
+        $works = Work::paginate(5);
+
         return view('admin.works.index', [
             'works' => $works,
         ]);
@@ -63,56 +65,63 @@ class WorkController extends Controller
     {
         $validateData = $request->validate([
             'project_name' => 'required|unique:works|max:100',
-            'slug' => 'required',
+            'slug' => 'required|unique:works',
             'agency' => 'required|max:255',
-            'url' => 'required',
+            'url' => 'required|url',
             'development_date' => 'required|before:today',
             'overview' => 'required',
             'images' => 'required',
+            'thumbnail' => 'required|image|max:2048',
             'service' => 'required',
             'tech_stacks' => 'required',
         ]);
 
-        $validateData['service_id'] = $validateData['service'];
-        $validateData['development_date'] = Carbon::parse($validateData['development_date'])->toDate();
-
-        $new_work = Work::create($validateData);
 
         DB::beginTransaction();
         try {
-            // for tech stack
-            foreach ($validateData['tech_stacks'] as $tech_stack_id) {
-                WorkTechStack::create([
-                    'work_id' => $new_work->id,
-                    'tech_stack_id' => $tech_stack_id
-                ]);
+            $validateData['service_id'] = $validateData['service'];
+            $validateData['development_date'] = Carbon::parse($validateData['development_date'])->toDate();
+
+            // Process Thumbnail
+            if ($request->hasFile('thumbnail')) {
+                $file = $request->file('thumbnail');
+                $original_name = $file->getClientOriginalName();
+                $destination_path = '/uploaded_files/work/thumbnail';
+                $time = date('YmdHis');
+                $file_name = 'work-' . $time . '-' . $original_name;
+                $file->move(public_path() . $destination_path, $file_name);
+
+                $validateData['thumbnail'] = $destination_path . '/' . $file_name;
             }
 
-            // for image
-            $temporaryFolder = Session::get('folder');
-            $namefile = Session::get('filename');
+            // Create Work
+            $work = Work::create($validateData);
 
-            for ($i = 0; $i < count($temporaryFolder); $i++) {
-                $temp_image = TempFile::where('folder', $temporaryFolder[$i])->where('filename', $namefile[$i])->first();
+            // Process Images
+            if ($request->hasFile('images')) {
+                foreach ($request->file('images') as $key => $file) {
+                    $original_name = $file->getClientOriginalName();
+                    $destination_path = '/uploaded_files/work/images';
+                    $time = date('YmdHis');
+                    $file_name = 'work-' . $time . '-' . $original_name;
+                    $file->move(public_path() . $destination_path, $file_name);
+                    $image = $destination_path . '/' . $file_name;
 
-                if ($temp_image) {
-                    Storage::copy('temps/temp/' . $temp_image->folder . "/" . $temp_image->filename, 'public/work-images/' . $temp_image->folder . '/' . $temp_image->filename);
-
-                    $image_path = $temp_image->folder . '/' . $temp_image->filename;
                     WorkImage::create([
-                        'work_id' => $new_work->id,
-                        'image' => $image_path,
-                        'image_alt' => $new_work->project_name . "images"
+                        'work_id' => $work->id,
+                        'image' => $image,
+                        'image_alt' => $work->project_name  . "-image-" . $key
                     ]);
-
-                    Storage::deleteDirectory('temps/temp/' . $temp_image->folder);
-
-                    $temp_image->delete();
                 }
             }
 
-            Session::remove('folder');
-            Session::remove('filename');
+            // Process Tech Stack
+            foreach ($validateData['tech_stacks'] as $tech_stack_id) {
+                WorkTechStack::create([
+                    'work_id' => $work->id,
+                    'tech_stack_id' => $tech_stack_id
+                ]);
+            }
 
             DB::commit();
         } catch (Exception $e) {
@@ -163,7 +172,107 @@ class WorkController extends Controller
      */
     public function update(Request $request, Work $work)
     {
-        //
+        $rules = [
+            'agency' => 'required|max:255',
+            'url' => 'required|url',
+            'development_date' => 'required|before:today',
+            'overview' => 'required',
+        ];
+
+        if ($request->project_name != $work->project_name) {
+            $rules['project_name'] = 'required|unique:works';
+        }
+
+        if ($request->slug != $work->slug) {
+            $rules['slug'] = 'required|unique:works';
+        }
+
+        if ($request->hasFile('thumbnail')) {
+            $rules['thumbnail'] = 'required|image|max:2048';
+        }
+
+        if ($request->hasFile('images')) {
+            $rules['images'] = 'required';
+        }
+
+        $validatedData = $request->validate($rules);
+
+        DB::beginTransaction();
+        try {
+            if ($request->service) {
+                $validatedData['service_id'] = $request->service;
+            }
+            $validatedData['development_date'] = Carbon::parse($validatedData['development_date'])->toDate();
+
+            // Process Thumbnail
+            if ($request->hasFile('thumbnail')) {
+                if ($old_thumbnail_path = $work->thumbnail) {
+                    $file_path = public_path($old_thumbnail_path);
+                    if (File::exists($file_path)) File::delete($file_path);
+                }
+
+                $file = $request->file('thumbnail');
+                $original_name = $file->getClientOriginalName();
+                $destination_path = '/uploaded_files/work/thumbnail';
+                $time = date('YmdHis');
+                $file_name = 'work-' . $time . '-' . $original_name;
+                $file->move(public_path() . $destination_path, $file_name);
+
+                $validatedData['thumbnail'] = $destination_path . '/' . $file_name;
+            }
+
+            // Update Work
+            unset($validatedData['images']);
+            Work::where('id', $work->id)->update($validatedData);
+
+            // Process Images
+            if ($request->hasFile('images')) {
+                // Delete All old images from Work Image
+                foreach ($work->images as $image) {
+                    $work_image = WorkImage::where('id', $image->id)->first();
+                    $file_path = public_path($work_image->image);
+                    if (File::exists($file_path)) File::delete($file_path);
+                    $work_image->delete();
+                }
+
+                // Add new images
+                foreach ($request->file('images') as $key => $file) {
+                    $original_name = $file->getClientOriginalName();
+                    $destination_path = '/uploaded_files/work/images';
+                    $time = date('YmdHis');
+                    $file_name = 'work-' . $time . '-' . $original_name;
+                    $file->move(public_path() . $destination_path, $file_name);
+                    $image = $destination_path . '/' . $file_name;
+
+                    WorkImage::create([
+                        'work_id' => $work->id,
+                        'image' => $image,
+                        'image_alt' => $work->project_name  . "-image-" . $key
+                    ]);
+                }
+            }
+
+            // Process Tech Stack
+            if ($request->tech_stacks) {
+                foreach ($work->tech_stacks as $tech_stack) {
+                    WorkTechStack::where("work_id", $work->id)->where('tech_stack_id', $tech_stack->id)->delete();
+                }
+
+                foreach ($request->tech_stacks as $new_tech_stack) {
+                    WorkTechStack::create([
+                        'work_id' => $work->id,
+                        'tech_stack_id' => $new_tech_stack
+                    ]);
+                }
+            }
+
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', $e->getMessage());
+        }
+
+        return redirect(route('works.show', $work->id))->with('success', "Work has been Updated!");
     }
 
     /**
@@ -174,7 +283,36 @@ class WorkController extends Controller
      */
     public function destroy(Work $work)
     {
-        //
+        DB::beginTransaction();
+        try {
+            // delete thumbnail from storage
+            if ($old_thumbnail_path = $work->thumbnail) {
+                $file_path = public_path($old_thumbnail_path);
+                if (File::exists($file_path)) File::delete($file_path);
+            }
+
+            // delete all image from storage and database
+            foreach ($work->images as $image) {
+                $work_image = WorkImage::where('id', $image->id)->first();
+                $file_path = public_path($work_image->image);
+                if (File::exists($file_path)) File::delete($file_path);
+                $work_image->delete();
+            }
+
+            // delete all tech stack
+            foreach ($work->tech_stacks as $tech_stack) {
+                WorkTechStack::where("work_id", $work->id)->where('tech_stack_id', $tech_stack->id)->delete();
+            }
+
+            $work->delete();
+
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', $e->getMessage());
+        }
+
+        return redirect()->route('works.index')->with('success', "Work has been deleted");
     }
 
     public function create_slug(Request $request)

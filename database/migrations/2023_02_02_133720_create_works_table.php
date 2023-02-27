@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('url');
             $table->text('overview');
             $table->date('development_date');
+            $table->string('thumbnail');
             $table->timestamps();
         });
     }

@@ -25,14 +25,14 @@ if (sidebar) {
     );
     const themeToggle = document.getElementById("theme-toggle");
 
-    themeToggle.addEventListener("click", () => {
-        toggleSidebarMobile(
-            sidebar,
-            sidebarBackdrop,
-            toggleSidebarMobileHamburger,
-            toggleSidebarMobileClose
-        );
-    });
+    // themeToggle.addEventListener("click", () => {
+    //     toggleSidebarMobile(
+    //         sidebar,
+    //         sidebarBackdrop,
+    //         toggleSidebarMobileHamburger,
+    //         toggleSidebarMobileClose
+    //     );
+    // });
 
     toggleSidebarMobileEl.addEventListener("click", () => {
         toggleSidebarMobile(

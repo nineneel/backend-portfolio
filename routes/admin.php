@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\ServiceController;
+use App\Http\Controllers\Admin\TechStackController;
 use App\Http\Controllers\Admin\TempFileController;
 use App\Http\Controllers\Admin\WorkController;
 use Illuminate\Support\Facades\Route;
@@ -42,4 +43,8 @@ Route::middleware('is.admin')->group(function () {
     // Service Controller
     Route::resource('services', ServiceController::class);
     Route::get('/service/create-slug', [ServiceController::class, 'create_slug']);
+
+    // Tech Stack Controller
+    Route::resource('tech-stacks', TechStackController::class);
+    Route::get('/tech-stack/create-slug', [TechStackController::class, 'create_slug']);
 });

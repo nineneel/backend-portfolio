@@ -81,6 +81,7 @@ class ServiceController extends Controller
      */
     public function show(Service $service)
     {
+        $service = $service->with(['works'])->where('id', $service->id)->first();
         return view('admin.services.show', [
             'service' => $service
         ]);

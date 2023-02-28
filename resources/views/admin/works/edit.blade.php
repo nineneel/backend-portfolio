@@ -198,7 +198,7 @@
                                                 class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
                                             <label for="{{ $tech_stack->name }}"
                                                 class="flex sm:justify-center w-full text-center pt-0 mx-1 text-sm font-medium text-gray-900 dark:text-gray-300 sm:pt-3 ">
-                                                <img src="{{ asset('assets/logo/tech_stack/' . $tech_stack->thumbnail) }}"
+                                                <img src="{{ asset($tech_stack->thumbnail) }}"
                                                     alt="{{ $tech_stack->thumbnail_alt }}" class="ml-3 w-7 h-7 sm:ml-0">
                                                 <span class="ml-2 sm:hidden">{{ $tech_stack->name }}</span>
                                             </label>

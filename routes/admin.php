@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\AuthController;
+use App\Http\Controllers\Admin\MiniProjectTagController;
 use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\Admin\TechStackController;
 use App\Http\Controllers\Admin\TempFileController;
@@ -47,4 +48,8 @@ Route::middleware('is.admin')->group(function () {
     // Tech Stack Controller
     Route::resource('tech-stacks', TechStackController::class);
     Route::get('/tech-stack/create-slug', [TechStackController::class, 'create_slug']);
+
+    // Mini Project Tag Controller
+    Route::resource('mini-project-tags', MiniProjectTagController::class);
+    Route::get('/mini-project-tag/create-slug', [MiniProjectTagController::class, 'create_slug']);
 });

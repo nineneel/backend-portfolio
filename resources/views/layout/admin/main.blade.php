@@ -82,7 +82,6 @@
                         </button>
                     </div>
                 @endif
-
                 @yield('content')
             </main>
             @include('layout.admin.footer')

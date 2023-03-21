@@ -41,13 +41,13 @@
                             <li>
                                 <a href="{{ route('works.index') }}"
                                     class="flex items-center p-2 text-base text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700">
-                                    Work List
+                                    All Works
                                 </a>
                             </li>
                             <li>
                                 <a href="{{ route('services.index') }}"
                                     class="flex items-center p-2 text-base text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700">
-                                    Service List
+                                    Service
                                 </a>
                             </li>
                         </ul>
@@ -73,8 +73,10 @@
                         </button>
                         <ul id="dropdown-mini-projects" class="hidden py-2 space-y-2">
                             <li>
-                                <a href="{{ 'layouts/stacked/' }}"
-                                    class="flex items-center p-2 text-base text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700">Stacked</a>
+                                <a href="{{ route('mini-projects.index') }}"
+                                    class="flex items-center p-2 text-base text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700">
+                                    All Mini Projects
+                                </a>
                             </li>
                             <li>
                                 <a href="{{ route('mini-project-tags.index') }}"

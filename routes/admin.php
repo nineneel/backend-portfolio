@@ -1,11 +1,13 @@
 <?php
 
 use App\Http\Controllers\Admin\AuthController;
+use App\Http\Controllers\Admin\MiniProjectController;
 use App\Http\Controllers\Admin\MiniProjectTagController;
 use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\Admin\TechStackController;
 use App\Http\Controllers\Admin\TempFileController;
 use App\Http\Controllers\Admin\WorkController;
+use App\Models\MiniProject;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -52,4 +54,8 @@ Route::middleware('is.admin')->group(function () {
     // Mini Project Tag Controller
     Route::resource('mini-project-tags', MiniProjectTagController::class);
     Route::get('/mini-project-tag/create-slug', [MiniProjectTagController::class, 'create_slug']);
+
+    // Mini Project Controller
+    Route::resource('mini-projects', MiniProjectController::class);
+    Route::get('/mini-project/create-slug', [MiniProjectController::class, 'create_slug']);
 });

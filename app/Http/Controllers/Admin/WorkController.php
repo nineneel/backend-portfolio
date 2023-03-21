@@ -41,11 +41,6 @@ class WorkController extends Controller
      */
     public function create()
     {
-        if (Session::has('folder')) {
-            Session::remove('folder');
-            Session::remove('filename');
-        }
-
         $tech_stack = TechStack::all();
         $services = Service::all();
 
@@ -63,7 +58,7 @@ class WorkController extends Controller
      */
     public function store(Request $request)
     {
-        $validateData = $request->validate([
+        $validatedData = $request->validate([
             'project_name' => 'required|unique:works|max:100',
             'slug' => 'required|unique:works',
             'agency' => 'required|max:255',
@@ -79,8 +74,8 @@ class WorkController extends Controller
 
         DB::beginTransaction();
         try {
-            $validateData['service_id'] = $validateData['service'];
-            $validateData['development_date'] = Carbon::parse($validateData['development_date'])->toDate();
+            $validatedData['service_id'] = $validatedData['service'];
+            $validatedData['development_date'] = Carbon::parse($validatedData['development_date'])->toDate();
 
             // Process Thumbnail
             if ($request->hasFile('thumbnail')) {
@@ -91,11 +86,11 @@ class WorkController extends Controller
                 $file_name = 'work-' . $time . '-' . $original_name;
                 $file->move(public_path() . $destination_path, $file_name);
 
-                $validateData['thumbnail'] = $destination_path . '/' . $file_name;
+                $validatedData['thumbnail'] = $destination_path . '/' . $file_name;
             }
 
             // Create Work
-            $work = Work::create($validateData);
+            $work = Work::create($validatedData);
 
             // Process Images
             if ($request->hasFile('images')) {
@@ -116,7 +111,7 @@ class WorkController extends Controller
             }
 
             // Process Tech Stack
-            foreach ($validateData['tech_stacks'] as $tech_stack_id) {
+            foreach ($validatedData['tech_stacks'] as $tech_stack_id) {
                 WorkTechStack::create([
                     'work_id' => $work->id,
                     'tech_stack_id' => $tech_stack_id

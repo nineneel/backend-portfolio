@@ -17,7 +17,9 @@ class MiniProjectTagFactory extends Factory
     public function definition()
     {
         return [
-            //
+            'name' => fake()->words(2, true),
+            'slug' => fake()->slug(),
+            'description' => fake()->paragraphs(3, true),
         ];
     }
 }

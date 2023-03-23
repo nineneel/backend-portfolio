@@ -35,8 +35,10 @@
                                     d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
                                     clip-rule="evenodd"></path>
                             </svg>
-                            <a href="{{ route('works.index') }}"
-                                class="ml-1 text-gray-700 hover:text-primary-600 md:ml-2 dark:text-gray-300 dark:hover:text-white">Works</a>
+                            <a href="{{ route('mini-projects.index') }}"
+                                class="ml-1 text-gray-700 hover:text-primary-600 md:ml-2 dark:text-gray-300 dark:hover:text-white">
+                                Mini Projects
+                            </a>
                         </div>
                     </li>
                     <li>
@@ -47,20 +49,38 @@
                                     d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
                                     clip-rule="evenodd"></path>
                             </svg>
-                            <span class="ml-1 text-gray-400 md:ml-2 dark:text-gray-500" aria-current="page">New
-                                Work</span>
+                            <a href="{{ route('mini-projects.show', $mini_project->id) }}"
+                                class="ml-1 text-gray-700 hover:text-primary-600 md:ml-2 dark:text-gray-300 dark:hover:text-white">
+                                Detail Mini Project
+                            </a>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="flex items-center">
+                            <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd"
+                                    d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                                    clip-rule="evenodd"></path>
+                            </svg>
+                            <span class="ml-1 text-gray-400 md:ml-2 dark:text-gray-500" aria-current="page">
+                                Update Mini Project
+                            </span>
                         </div>
                     </li>
                 </ol>
             </nav>
-            <h1 class="text-xl font-semibold text-gray-900 sm:text-2xl dark:text-white">Add New Work</h1>
+            <h1 class="text-xl font-semibold text-gray-900 sm:text-2xl dark:text-white">Update Mini Project</h1>
         </div>
 
         <div class="col-span-2">
             <div
                 class="p-4 mb-4 bg-white border border-gray-200 rounded-lg shadow-sm 2xl:col-span-2 dark:border-gray-700 sm:p-6 dark:bg-gray-800">
-                <form action="{{ route('works.store') }}" method="post" enctype="multipart/form-data">
+                <form action="{{ route('mini-projects.update', $mini_project->id) }}" method="post"
+                    enctype="multipart/form-data">
+                    @method('put')
                     @csrf
+                    <input type="hidden" name="work_id" value="{{ $mini_project->id }}">
                     <div class="grid grid-cols-6 gap-6">
                         {{-- Project Name --}}
                         <div class="col-span-6 sm:col-span-3">
@@ -68,7 +88,7 @@
                                 class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Project Name</label>
                             <input type="text" name="project_name" id="project_name" placeholder="Project Name" required
                                 class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500 @error('project_name')  border-red-500 text-red-900 focus:border-red-500 dark:text-red-500 dark:border-red-500 @enderror"
-                                value="{{ old('project_name') }}">
+                                value="{{ old('project_name', $mini_project->project_name) }}">
                             @error('project_name')
                                 <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ $message }}</p>
                             @enderror
@@ -90,24 +110,12 @@
                                     </label>
                                 </div>
                                 <input type="text" name="slug" id="slug" placeholder="project-name" readonly
-                                    value="{{ old('slug') }}"
+                                    value="{{ old('slug', $mini_project->slug) }}"
                                     class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-500 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500 cursor-not-allowed @error('slug')  border-red-500 text-red-900 focus:border-red-500 dark:text-red-500 dark:border-red-500 @enderror">
                                 @error('slug')
                                     <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ $message }}</p>
                                 @enderror
                             </div>
-                        </div>
-
-                        {{-- Agency --}}
-                        <div class="col-span-6 sm:col-span-2">
-                            <label for="agency"
-                                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Agency</label>
-                            <input type="text" name="agency" id="agency" placeholder="agency" required
-                                class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500 @error('agency')  border-red-500 text-red-900 focus:border-red-500 dark:text-red-500 dark:border-red-500 @enderror"
-                                value="{{ old('agency') }}">
-                            @error('agency')
-                                <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ $message }}</p>
-                            @enderror
                         </div>
 
                         {{-- URL --}}
@@ -116,7 +124,7 @@
                                 class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">URL</label>
                             <input type="url" name="url" id="url" required placeholder="https://nineneel.com"
                                 class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500 @error('url')  border-red-500 text-red-900 focus:border-red-500 dark:text-red-500 dark:border-red-500 @enderror"
-                                value="{{ old('url') }}">
+                                value="{{ old('url', $mini_project->url) }}">
                             @error('url')
                                 <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ $message }}</p>
                             @enderror
@@ -137,6 +145,7 @@
                                     </svg>
                                 </div>
                                 <input datepicker type="text" datepicker-format="dd/mm/yyyy"
+                                    value="{{ old('development_date', \Carbon\Carbon::createFromFormat('Y-m-d', $mini_project->development_date))->format('d/m/Y') }}"
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 @error('development_date')  border-red-500 text-red-900 focus:border-red-500 dark:text-red-500 dark:border-red-500 @enderror"
                                     name="development_date" placeholder="Select date">
                             </div>
@@ -145,19 +154,22 @@
                             @enderror
                         </div>
 
-                        {{-- Services --}}
-                        <div class="col-span-6">
-                            <label for="service"
-                                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Service</label>
-                            <select id="service" name="service"
+                        {{-- Tag --}}
+                        <div class="col-span-6 sm:col-span-2 ">
+                            <label for="tag"
+                                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Tag</label>
+                            <select id="tag" name="tag"
                                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                                <option selected disabled>Select Service</option>
-                                @foreach ($services as $service)
-                                    <option value="{{ $service->id }}">{{ $service->name }}</option>
+                                {{-- <option selected disabled>Select tag </option> --}}
+                                @foreach ($tags as $tag)
+                                    @if ($tag->id == $mini_project->tag_id)
+                                        <option selected value="{{ $tag->id }}">{{ $tag->name }}</option>
+                                    @else
+                                        <option value="{{ $tag->id }}">{{ $tag->name }}</option>
+                                    @endif
                                 @endforeach
                             </select>
-
-                            @error('service')
+                            @error('tag')
                                 <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ $message }}</p>
                             @enderror
                         </div>
@@ -171,7 +183,8 @@
                                     <li
                                         class="w-full border-b border-gray-200 sm:border-b-0 sm:border-r dark:border-gray-600  @if ($loop->iteration == count($tech_stacks)) border-b-0 sm:border-r-0 @endif)">
                                         <div class="flex justify-center items-center p-2 sm:flex-col">
-                                            <input id="{{ $tech_stack->name }}" type="checkbox" name="tech_stacks[]"
+                                            <input @if ($mini_project->tech_stacks->contains('id', $tech_stack->id)) checked @endif
+                                                id="{{ $tech_stack->name }}" type="checkbox" name="tech_stacks[]"
                                                 value="{{ $tech_stack->id }}"
                                                 class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
                                             <label for="{{ $tech_stack->name }}"
@@ -196,11 +209,12 @@
                                 class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Overview</label>
                             <textarea id="overview" name="overview" rows="3"
                                 class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 @error('overview')  border-red-500 text-red-900 focus:border-red-500 dark:text-red-500 dark:border-red-500 @enderror"
-                                placeholder="Write your thoughts here...">{{ old('overview') }}</textarea>
+                                placeholder="Write your thoughts here...">{{ old('overview', $mini_project->overview) }}</textarea>
                             @error('overview')
                                 <p class="mt-2 text-sm text-red-600 dark:text-red-500">{{ $message }}</p>
                             @enderror
                         </div>
+
 
                         {{-- Thumbnail --}}
                         <div class="col-span-6">
@@ -208,9 +222,11 @@
                                 for="thumbnail-container">Thumbnail</label>
                             <div class="flex flex-col items-center justify-center w-full">
                                 <div id="thumbnail-preview"
-                                    class="hidden mb-2 p-4 flex-col items-center justify-center w-full border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 overflow-hidden dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
+                                    class="flex mb-2 p-4 flex-col items-center justify-center w-full border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 overflow-hidden dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
                                     <div id="thumbnail-preview-container"
                                         class="py-1 flex flex-wrap justify-center w-full h-full gap-4 xl:gap-8">
+                                        <img src="{{ asset($mini_project->thumbnail) }}"
+                                            alt="{{ $mini_project->project_name }} thumbnail" class="h-56">
                                     </div>
                                     <p class="mb-2 text-sm text-gray-500 dark:text-gray-400"><span
                                             class="font-semibold">Thumbnail Preview</span></p>
@@ -243,9 +259,13 @@
 
                             <div class="flex flex-col items-center justify-center w-full">
                                 <div id="image-preview"
-                                    class="hidden mb-2 p-4 flex-col items-center justify-center w-full border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 overflow-hidden dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
+                                    class="flex mb-2 p-4 flex-col items-center justify-center w-full border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 overflow-hidden dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
                                     <div id="image-preview-container"
                                         class="py-1 flex flex-wrap justify-center w-full h-full gap-4 xl:gap-8">
+                                        @foreach ($mini_project->images as $image)
+                                            <img src="{{ asset($image->image) }}" alt="{{ $image->image_alt }}"
+                                                class="h-56">
+                                        @endforeach
                                     </div>
                                     <p class="mb-2 text-sm text-gray-500 dark:text-gray-400"><span
                                             class="font-semibold">Preview</span></p>
@@ -290,7 +310,7 @@
         const slug_toggle = document.querySelector('#slug-toggle');
 
         project_name.addEventListener('change', function() {
-            fetch(`/admin/work/create-slug?title=${project_name.value}`)
+            fetch(`/admin/mini-project/create-slug?title=${project_name.value}`)
                 .then(response => response.json())
                 .then(data => slug.value = data.slug);
         })

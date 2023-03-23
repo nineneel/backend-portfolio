@@ -115,7 +115,9 @@
                                         </a>
                                     </td>
                                     <td class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                        {{ $work->development_date }}</td>
+                                        {{ \Carbon\Carbon::createFromFormat('Y-m-d', $work->development_date)->format('d F Y') }}
+                                    </td>
+                                    </td>
 
                                     <td class="p-4 space-x-2 whitespace-nowrap">
                                         <a href="{{ route('works.show', $work->id) }}" id="updateProductButton"

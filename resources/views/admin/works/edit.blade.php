@@ -153,8 +153,8 @@
                                             clip-rule="evenodd"></path>
                                     </svg>
                                 </div>
-                                <input datepicker type="text"
-                                    value="{{ old('development_date', $work->development_date) }}"
+                                <input datepicker type="text" datepicker-format="dd/mm/yyyy"
+                                    value="{{ old('development_date', \Carbon\Carbon::createFromFormat('Y-m-d', $work->development_date))->format('d/m/Y') }}"
                                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 @error('development_date')  border-red-500 text-red-900 focus:border-red-500 dark:text-red-500 dark:border-red-500 @enderror"
                                     name="development_date" placeholder="Select date">
                             </div>

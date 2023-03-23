@@ -75,7 +75,7 @@ class WorkController extends Controller
         DB::beginTransaction();
         try {
             $validatedData['service_id'] = $validatedData['service'];
-            $validatedData['development_date'] = Carbon::parse($validatedData['development_date'])->toDate();
+            $validatedData['development_date'] = Carbon::createFromFormat('d/m/Y', $validatedData['development_date'])->format('Y-m-d');
 
             // Process Thumbnail
             if ($request->hasFile('thumbnail')) {
@@ -197,7 +197,8 @@ class WorkController extends Controller
             if ($request->service) {
                 $validatedData['service_id'] = $request->service;
             }
-            $validatedData['development_date'] = Carbon::parse($validatedData['development_date'])->toDate();
+
+            $validatedData['development_date'] = Carbon::createFromFormat('d/m/Y', $validatedData['development_date'])->format('Y-m-d');
 
             // Process Thumbnail
             if ($request->hasFile('thumbnail')) {

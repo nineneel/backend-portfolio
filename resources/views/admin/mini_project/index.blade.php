@@ -110,7 +110,8 @@
                                         </a>
                                     </td>
                                     <td class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                        {{ \Carbon\Carbon::create($mini_project->development_date)->format('d F Y') }}</td>
+                                        {{ \Carbon\Carbon::createFromFormat('Y-m-d', $mini_project->development_date)->format('d F Y') }}
+
 
                                     <td class="p-4 space-x-2 whitespace-nowrap">
                                         <a href="{{ route('mini-projects.show', $mini_project->id) }}"

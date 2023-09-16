@@ -18,6 +18,8 @@ class ServiceFactory extends Factory
     {
         return [
             'name' => fake()->words(2, true),
+            'thumbnail' => fake()->image(),
+            'slug' => fake()->slug(),
             'description' => fake()->paragraphs(3, true),
         ];
     }

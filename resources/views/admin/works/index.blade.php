@@ -60,6 +60,11 @@
                                         <label for="checkbox-all" class="sr-only">checkbox</label>
                                     </div>
                                 </th>
+
+                                <th scope="col"
+                                    class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400">
+                                    #
+                                </th>
                                 <th scope="col"
                                     class="p-4 text-xs font-medium text-left text-gray-500 uppercase dark:text-gray-400">
                                     Project Name
@@ -95,21 +100,27 @@
                                             <label for="checkbox-{{ $work->id }}" class="sr-only">checkbox</label>
                                         </div>
                                     </td>
+                                    <td class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                        #{{ $work->id }}
+                                    </td>
                                     <td class="p-4 text-base font-medium text-gray-900 dark:text-white">
                                         {{ $work->project_name }}
                                     </td>
                                     <td class="p-4 text-base font-medium text-gray-900 dark:text-white">
                                         {{ $work->agency }}</td>
-                                    <td class="p-4 text-sm font-normal text-gray-900  dark:text-gray-400">
-                                        <a href="{{ $work->url }}" target="_blank" class="hover:dark:text-indigo-500">
-                                            {{ $work->url }}
+                                    <td class="p-4 text-sm font-normal text-gray-900 dark:text-gray-400">
+                                        <a href="{{ $work->url }}" target="_blank"
+                                            class="hover:dark:text-indigo-500 truncate">
+                                            {{ substr($work->url, 0, 50) }}...
                                         </a>
                                     </td>
                                     <td class="p-4 text-base font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                        {{ $work->development_date }}</td>
+                                        {{ \Carbon\Carbon::createFromFormat('Y-m-d', $work->development_date)->format('d F Y') }}
+                                    </td>
+                                    </td>
 
                                     <td class="p-4 space-x-2 whitespace-nowrap">
-                                        <a href="{{ route('works.show', $work->slug) }}" id="updateProductButton"
+                                        <a href="{{ route('works.show', $work->id) }}" id="updateProductButton"
                                             class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white rounded-lg bg-yellow-300 hover:bg-yellow-800 focus:ring-4 focus:ring-yellow-300 dark:bg-yellow-600 dark:hover:bg-yellow-700 dark:focus:ring-yellow-800">
                                             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 576 512"
                                                 xmlns="http://www.w3.org/2000/svg">
@@ -120,7 +131,7 @@
                                                     d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM432 256c0 79.5-64.5 144-144 144s-144-64.5-144-144s64.5-144 144-144s144 64.5 144 144zM288 192c0 35.3-28.7 64-64 64c-11.5 0-22.3-3-31.6-8.4c-.2 2.8-.4 5.5-.4 8.4c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6z" />
                                             </svg>
                                         </a>
-                                        <a href="{{ route('works.edit', $work->slug) }}" id="updateProductButton"
+                                        <a href="{{ route('works.edit', $work->id) }}" id="updateProductButton"
                                             class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white rounded-lg bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">
                                             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"
                                                 xmlns="http://www.w3.org/2000/svg">
@@ -132,16 +143,66 @@
                                                     clip-rule="evenodd"></path>
                                             </svg>
                                         </a>
-                                        <button type="button" id="deleteProductButton"
-                                            class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-red-700 rounded-lg hover:bg-red-800 focus:ring-4 focus:ring-red-300 dark:focus:ring-red-900">
+
+                                        <button data-modal-target="popup-modal-{{ $work->id }}"
+                                            data-modal-toggle="popup-modal-{{ $work->id }}"
+                                            class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-red-700 rounded-lg hover:bg-red-800 focus:ring-4 focus:ring-red-300 dark:focus:ring-red-900"
+                                            type="button">
                                             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"
                                                 xmlns="http://www.w3.org/2000/svg">
                                                 <path fill-rule="evenodd"
                                                     d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
                                                     clip-rule="evenodd"></path>
                                             </svg>
-
                                         </button>
+
+                                        <div id="popup-modal-{{ $work->id }}" tabindex="-1"
+                                            class="fixed top-0 left-0 right-0 z-50 hidden p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-modal md:h-full">
+                                            <div class="relative w-full h-full max-w-md md:h-auto">
+                                                <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+                                                    <button type="button"
+                                                        class="absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-800 dark:hover:text-white"
+                                                        data-modal-hide="popup-modal-{{ $work->id }}">
+                                                        <svg aria-hidden="true" class="w-5 h-5" fill="currentColor"
+                                                            viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                                            <path fill-rule="evenodd"
+                                                                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                                                clip-rule="evenodd"></path>
+                                                        </svg>
+                                                        <span class="sr-only">Close modal</span>
+                                                    </button>
+                                                    <div class="p-6 text-center">
+                                                        <svg aria-hidden="true"
+                                                            class="mx-auto mb-4 text-gray-400 w-14 h-14 dark:text-gray-200"
+                                                            fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                                            xmlns="http://www.w3.org/2000/svg">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2"
+                                                                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
+                                                            </path>
+                                                        </svg>
+                                                        <h3
+                                                            class="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
+                                                            Are you sure you
+                                                            want to delete this Work?</h3>
+                                                        <form action="{{ route('works.destroy', $work->id) }}"
+                                                            method="POST" class="inline-flex">
+                                                            @method('delete')
+                                                            @csrf
+                                                            <button type="submit"
+                                                                class="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center mr-2">
+                                                                Yes, I'm sure
+                                                            </button>
+                                                        </form>
+                                                        <button data-modal-hide="popup-modal-{{ $work->id }}"
+                                                            type="button"
+                                                            class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600">No,
+                                                            cancel</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
                                     </td>
                                 </tr>
                             @endforeach
@@ -154,48 +215,6 @@
 
     <div
         class="sticky bottom-0 right-0 items-center w-full p-4 bg-white border-t border-gray-200 sm:flex sm:justify-between dark:bg-gray-800 dark:border-gray-700">
-        <div class="flex items-center mb-4 sm:mb-0">
-            <a href="#"
-                class="inline-flex justify-center p-1 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white">
-                <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                    <path fill-rule="evenodd"
-                        d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
-                        clip-rule="evenodd"></path>
-                </svg>
-            </a>
-            <a href="#"
-                class="inline-flex justify-center p-1 mr-2 text-gray-500 rounded cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white">
-                <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                    <path fill-rule="evenodd"
-                        d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                        clip-rule="evenodd"></path>
-                </svg>
-            </a>
-            <span class="text-sm font-normal text-gray-500 dark:text-gray-400">Showing <span
-                    class="font-semibold text-gray-900 dark:text-white">1-20</span> of <span
-                    class="font-semibold text-gray-900 dark:text-white">2290</span></span>
-        </div>
-        <div class="flex items-center space-x-3">
-            <a href="#"
-                class="inline-flex items-center justify-center flex-1 px-3 py-2 text-sm font-medium text-center text-white rounded-lg bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">
-                <svg class="w-5 h-5 mr-1 -ml-1" fill="currentColor" viewBox="0 0 20 20"
-                    xmlns="http://www.w3.org/2000/svg">
-                    <path fill-rule="evenodd"
-                        d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
-                        clip-rule="evenodd"></path>
-                </svg>
-                Previous
-            </a>
-            <a href="#"
-                class="inline-flex items-center justify-center flex-1 px-3 py-2 text-sm font-medium text-center text-white rounded-lg bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">
-                Next
-                <svg class="w-5 h-5 ml-1 -mr-1" fill="currentColor" viewBox="0 0 20 20"
-                    xmlns="http://www.w3.org/2000/svg">
-                    <path fill-rule="evenodd"
-                        d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                        clip-rule="evenodd"></path>
-                </svg>
-            </a>
-        </div>
+        {{ $works->links('layout.admin.pagination') }}
     </div>
 @endsection

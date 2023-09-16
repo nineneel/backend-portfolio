@@ -4,7 +4,11 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Service;
+use Cviebrock\EloquentSluggable\Services\SlugService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
+use Exception;
 
 class ServiceController extends Controller
 {
@@ -15,7 +19,7 @@ class ServiceController extends Controller
      */
     public function index()
     {
-        $services = Service::all();
+        $services = Service::paginate(5);
         return view('admin.services.index', [
             'services' => $services
         ]);
@@ -28,7 +32,7 @@ class ServiceController extends Controller
      */
     public function create()
     {
-        //
+        return view('admin.services.create');
     }
 
     /**
@@ -39,7 +43,34 @@ class ServiceController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validatedData = $request->validate([
+            'name' => "required|max:255",
+            'slug' => "required|unique:services",
+            'description' => 'required',
+            'thumbnail' => 'required|image|max:1024'
+        ]);
+
+        DB::beginTransaction();
+        try {
+            if ($request->hasFile('thumbnail')) {
+                $file = $request->file('thumbnail');
+                $original_name = $file->getClientOriginalName();
+                $destination_path = '/uploaded_files/service/thumbnail';
+                $time = date('YmdHis');
+                $file_name = 'service-' . $time . '-' . $original_name;
+                $file->move(public_path() . $destination_path, $file_name);
+
+                $validatedData['thumbnail'] = $destination_path . '/' . $file_name;
+            }
+
+            Service::create($validatedData);
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollback();
+            return redirect()->back()->with('error', $e->getMessage());
+        }
+
+        return redirect(route('services.index'))->with('success', "Services has been Created!");
     }
 
     /**
@@ -50,7 +81,10 @@ class ServiceController extends Controller
      */
     public function show(Service $service)
     {
-        //
+        $service = $service->with(['works'])->where('id', $service->id)->first();
+        return view('admin.services.show', [
+            'service' => $service
+        ]);
     }
 
     /**
@@ -61,7 +95,9 @@ class ServiceController extends Controller
      */
     public function edit(Service $service)
     {
-        //
+        return view('admin.services.edit', [
+            'service' => $service
+        ]);
     }
 
     /**
@@ -73,7 +109,47 @@ class ServiceController extends Controller
      */
     public function update(Request $request, Service $service)
     {
-        //
+        $rules = [
+            'name' => "required|max:255",
+            'description' => 'required',
+        ];
+
+        if ($request->slug != $service->slug) {
+            $rules['slug'] = "required|unique:services";
+        }
+
+        if ($request->hasFile('thumbnail')) {
+            $rules['thumbnail'] = 'required|image|max:1024';
+        }
+
+        $validatedData = $request->validate($rules);
+
+        DB::beginTransaction();
+        try {
+            if ($request->hasFile('thumbnail')) {
+                if ($old_thumbnail_path = $service->thumbnail) {
+                    $file_path = public_path($old_thumbnail_path);
+                    if (File::exists($file_path)) File::delete($file_path);
+                }
+
+                $file = $request->file('thumbnail');
+                $original_name = $file->getClientOriginalName();
+                $destination_path = '/uploaded_files/service/thumbnail';
+                $time = date('YmdHis');
+                $file_name = 'service-' . $time . '-' . $original_name;
+                $file->move(public_path() . $destination_path, $file_name);
+
+                $validatedData['thumbnail'] = $destination_path . '/' . $file_name;
+            }
+
+            $service->update($validatedData);
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollback();
+            return redirect()->back()->with('error', $e->getMessage());
+        }
+
+        return redirect(route('services.show', $service->id))->with('success', "Services has been Created!");
     }
 
     /**
@@ -84,6 +160,29 @@ class ServiceController extends Controller
      */
     public function destroy(Service $service)
     {
-        //
+        if (count($service->works) > 0) {
+            return redirect()->back()->with('error', 'Can\'t delete this service, because this service is attached with some work!');
+        }
+
+        DB::beginTransaction();
+        try {
+            if ($old_thumbnail_path = $service->thumbnail) {
+                $file_path = public_path($old_thumbnail_path);
+                if (File::exists($file_path)) File::delete($file_path);
+            }
+            $service->delete();
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollback();
+            return redirect()->back()->with('error', $e->getMessage());
+        }
+
+        return redirect(route('services.index'))->with('success', "Services has been Deleted!");
+    }
+
+    public function create_slug(Request $request)
+    {
+        $slug = SlugService::createSlug(Service::class, 'slug', $request->title);
+        return response()->json(['slug' => $slug]);
     }
 }

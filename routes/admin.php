@@ -1,9 +1,13 @@
 <?php
 
 use App\Http\Controllers\Admin\AuthController;
+use App\Http\Controllers\Admin\MiniProjectController;
+use App\Http\Controllers\Admin\MiniProjectTagController;
 use App\Http\Controllers\Admin\ServiceController;
+use App\Http\Controllers\Admin\TechStackController;
 use App\Http\Controllers\Admin\TempFileController;
 use App\Http\Controllers\Admin\WorkController;
+use App\Models\MiniProject;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -28,6 +32,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('admin_logout');
 // upload temporary file using filepond
 Route::post('/temp-upload', [TempFileController::class, 'temp_upload']);
 Route::delete('/temp-delete', [TempFileController::class, 'temp_delete']);
+Route::get('/temp-load', [TempFileController::class, 'temp_load']);
 
 Route::middleware('is.admin')->group(function () {
     Route::get('/dashboard', function () {
@@ -35,9 +40,22 @@ Route::middleware('is.admin')->group(function () {
     })->name('dashboard');
 
     // Work Controller
-    Route::get('/create-slug', [WorkController::class, 'create_slug']);
     Route::resource('works', WorkController::class);
+    Route::get('/work/create-slug', [WorkController::class, 'create_slug']);
 
     // Service Controller
     Route::resource('services', ServiceController::class);
+    Route::get('/service/create-slug', [ServiceController::class, 'create_slug']);
+
+    // Tech Stack Controller
+    Route::resource('tech-stacks', TechStackController::class);
+    Route::get('/tech-stack/create-slug', [TechStackController::class, 'create_slug']);
+
+    // Mini Project Tag Controller
+    Route::resource('mini-project-tags', MiniProjectTagController::class);
+    Route::get('/mini-project-tag/create-slug', [MiniProjectTagController::class, 'create_slug']);
+
+    // Mini Project Controller
+    Route::resource('mini-projects', MiniProjectController::class);
+    Route::get('/mini-project/create-slug', [MiniProjectController::class, 'create_slug']);
 });
